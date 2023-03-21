@@ -8,19 +8,27 @@ import java.util.List;
  * <p>
  * 比如输入字符串为 "PAYPALISHIRING" 行数为 3 时，排列如下：
  * <p>
- * P   A   H   N
+ * P A H N
  * A P L S I I G
- * Y   I   R
+ * Y I R
  * 之后，你的输出需要从左往右逐行读取，产生出一个新的字符串，比如："PAHNAPLSIIGYIR"。
  * <p>
  * <p>
  * 输入：s = "PAYPALISHIRING", numRows = 4
  * 输出："PINALSIGYAHRPI"
  * 解释：
- * P     I    N
- * A   L S  I G
- * Y A   H R
- * P     I
+ * P I N
+ * A L S I G
+ * Y A H R
+ * P I
+ * <p>
+ * ABCDE 4
+ * <p>
+ * A
+ * B
+ * CE
+ * D
+ * <p>
  * 请你实现这个将字符串进行指定行数变换的函数：
  * <p>
  * string convert(string s, int numRows);
@@ -31,32 +39,68 @@ import java.util.List;
  */
 public class P06 {
     public static void main(String[] args) {
+        // String s = "PAYPALISHIRING";
+        // String s = "ABC";
+        // int numRows = 2;
         String s = "PAYPALISHIRING";
-        int numRows = 4;
+        int numRows = 5;
+        /**
+         * A
+         * B
+         * C E
+         * D
+         * 
+         * 
+         * 
+         * 
+         * P        H
+         * A     S  I
+         * Y   I    R
+         * P L      I  G
+         * A        N
+         * 
+         * "PHASIYIRPLIGAN"
+         */
         String convertString = convert(s, numRows);
-        System.out.println(convertString);
+        System.out.println("result is " + convertString);
     }
 
     public static String convert(String s, int numRows) {
+        if (s.isEmpty()) {
+            return s;
+        }
+        if (numRows <= 1) {
+            return s;
+        }
+        if (s.length() < numRows) {
+            return s;
+        }
         int len = s.length();
-        //拆分起来 第一个等于numRows+(numRows-2)
-        ///每一束数字一共有多少字（包括中间的横栏）
+        // 拆分起来 第一个等于numRows+(numRows-2)
+        /// 每一束数字一共有多少字（包括中间的横栏）
         int rowsCharNums = numRows + numRows - 2;
-        ///一共有这么多束数字
+        if (rowsCharNums < 1) {
+            return s;
+        }
+        if (rowsCharNums > len) {
+            rowsCharNums = len;
+        }
+        /// 一共有这么多束数字
         int rowsCount = len / rowsCharNums;
-        ///除开后的余数
+        /// 除开后的余数
         int residue = len % rowsCharNums;
 
-        ///把每束字丢进去
+        /// 把每束字丢进去
         List<String> array = new ArrayList<>();
-        System.out.println("rowsChatNums=" + rowsCharNums + "  rowsCount=" + rowsCount + "  residue=" + residue);
+        System.out.println("rowsChatNums=" + rowsCharNums + " rowsCount=" + rowsCount
+                + " residue=" + residue);
         for (int i = 0; i < rowsCount; i++) {
             String charStr = s.substring(i * (rowsCharNums), rowsCharNums * (i + 1));
             String fullCharStr = charStr.substring(0, numRows);
             String residueStr = charStr.substring(numRows);
             array.add(fullCharStr);
             for (int j = 0; j < residueStr.length(); j++) {
-                int index = 1 + j;
+                int index = numRows - 1 - (1 + j);
                 char[] arrayChar = new char[numRows];
                 for (int k = 0; k < numRows; k++) {
                     if (index == k) {
@@ -69,12 +113,15 @@ public class P06 {
 
             }
         }
-        array.add(s.substring(s.length() - 2) + "-".repeat(Math.max(0, numRows - residue)));
+        if (residue > 0) {
+            array.add(s.substring(s.length() - residue) + "-".repeat(Math.max(0, numRows
+                    - residue)));
+        }
 
-        for (String str :
-                array) {
+        for (String str : array) {
             System.out.println(str);
         }
+
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < numRows; i++) {
             for (String value : array) {
